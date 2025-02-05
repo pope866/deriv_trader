@@ -1,0 +1,7 @@
+python_deriv_api
+tensorflow
+colorama
+pandas
+numpy
+python-dotenv
+InquirerPy

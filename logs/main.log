@@ -1,0 +1,19 @@
+2025-02-04 16:49:18,478 - main - INFO - Neural network model created.
+2025-02-04 16:49:18,490 - main - ERROR - Error loading model: [Errno 2] Unable to synchronously open file (unable to open file: name = 'models/my_model.h5', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0)
+2025-02-04 16:49:18,491 - main - WARNING - No se pudo cargar el modelo al inicio.  Entrenalo o cárgalo desde el menú.
+2025-02-04 16:50:02,687 - main - INFO - Neural network model saved to models/my_model.h5
+2025-02-04 16:50:19,785 - main - INFO - Neural network model loaded from models/my_model.h5
+2025-02-04 16:55:09,230 - main - INFO - Neural network model created.
+2025-02-04 16:55:09,282 - main - INFO - Neural network model loaded from models/my_model.h5
+2025-02-04 16:55:41,789 - main - INFO - Neural network model saved to models/my_model.h5
+2025-02-04 16:57:56,014 - main - INFO - Neural network model created.
+2025-02-04 16:57:56,058 - main - INFO - Neural network model loaded from models/my_model.h5
+2025-02-04 16:58:05,650 - main - INFO - Neural network model loaded from models/my_model.h5
+2025-02-04 16:58:17,434 - main - INFO - Neural network model saved to models/my_model.h5
+2025-02-05 11:11:37,409 - main - CRITICAL - Unhandled exception in main: 'DERIV_TOKEN'
+2025-02-05 11:16:20,193 - main - CRITICAL - Unhandled exception in main: 'DERIV_TOKEN'
+2025-02-05 11:18:49,524 - main - CRITICAL - Unhandled exception in main: 'DERIV_TOKEN'
+2025-02-05 11:19:08,490 - main - CRITICAL - Unhandled exception in main: 'DERIV_TOKEN'
+2025-02-05 11:28:11,291 - main - DEBUG - Main: Initializing Deriv API client...
+2025-02-05 11:28:11,293 - main - DEBUG - Main: Deriv API client initialized.
+2025-02-05 11:28:11,294 - main - DEBUG - Main: Authenticating...

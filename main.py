@@ -20,7 +20,7 @@ async def main():
     try:
         # Initialize Deriv API client
         logger.debug("Main: Initializing Deriv API client...")
-        api_client = DerivClient(api_id=67991, token=env_vars["deriv_token"])  # Replace 1234 with your actual app_id
+        api_client = DerivClient(api_id=71513, token=env_vars["deriv_token"])  # Replace 1234 with your actual app_id
         logger.debug("Main: Deriv API client initialized.")
 
         logger.debug("Main: Authenticating...")

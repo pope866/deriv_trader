@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from dotenv import load_dotenv
 
 from src.api_client import DerivClient
 from src.data_handler import DataHandler
@@ -8,54 +9,90 @@ from src.neural_network import NeuralNetwork
 from src.trading_logic import TradingLogic
 from src.cli import CLI
 from src.utils import setup_logger, load_env_vars
-from dotenv import load_dotenv
 
-# xnaRl4zlCAEyhZQ: Start of main function
 async def main():
-    """Main function to orchestrate the application."""
-    # xnaRl4zlCAEyhZQ: Load configuration and initialize logger
+    """Main async function to orchestrate the application."""
+    # Load environment variables
     load_dotenv()
-    env_vars = load_env_vars()
-    logger = setup_logger('main', 'logs/main.log', level=logging.DEBUG)  # Set level to DEBUG
-
+    
+    # Initialize logging
+    logger = setup_logger('main', 'logs/main.log', level=logging.INFO)
+    logger.info("Application starting...")
+    
     try:
-        # xnaRl4zlCAEyhZQ: Initialize Deriv API client
-        logger.debug("Main: Initializing Deriv API client...")
-        api_client = DerivClient(api_id=71513, token=env_vars["deriv_token"])  # Replace 1234 with your actual app_id
-        logger.debug("Main: Deriv API client initialized.")
-
-        logger.debug("Main: Authenticating...")
-        await api_client.authenticate()
-        logger.debug("Main: Authentication completed.")
-
-        # xnaRl4zlCAEyhZQ: Initialize Data Handler
-        data_handler = DataHandler()
-
-        # xnaRl4zlCAEyhZQ: Initialize Neural Network
-        input_shape = (1, 3)  # Shape de ejemplo - ¡IMPORTANTE: AJUSTAR SEGÚN TUS DATOS!
-        nn = NeuralNetwork(input_shape, logger=logger)
-
-        # Optionally load the model (if it exists)
-        if not nn.load_model():
-            logger.warning("No se pudo cargar el modelo al inicio.  Entrenalo o cárgalo desde el menú.")
-
-        # xnaRl4zlCAEyhZQ: Initialize Trading Logic
-        trading_logic = TradingLogic(api_client, data_handler, nn, env_vars)
-
-        # xnaRl4zlCAEyhZQ: Initialize and run the CLI
-        cli = CLI(api_client, trading_logic, data_handler, nn)
-        await cli.main_menu()
-
+        # Load and validate environment variables
+        env_vars = load_env_vars()
+        required_vars = ["deriv_token", "api_id"]
+        for var in required_vars:
+            if var not in env_vars:
+                raise ValueError(f"Missing required environment variable: {var}")
+        
+        # Initialize components
+        logger.info("Initializing components...")
+        
+        api_client = None
+        try:
+            api_client = DerivClient(
+                api_id=int(env_vars["api_id"]),
+                token=env_vars["deriv_token"]
+            )
+            logger.info("Deriv API client initialized successfully")
+            
+            # Authenticate
+            logger.info("Authenticating with Deriv API...")
+            await api_client.authenticate()
+            logger.info("Authentication successful")
+            
+            # Initialize other components
+            data_handler = DataHandler()
+            logger.info("Data handler initialized")
+            
+            # Neural Network setup - adjust input_shape according to your model
+            input_shape = (1, 3)  
+            nn = NeuralNetwork(input_shape, logger=logger)
+            logger.info("Neural network initialized")
+            
+            # Try to load pre-trained model
+            if nn.load_model():
+                logger.info("Model loaded successfully")
+            else:
+                logger.warning("No pre-trained model found")
+            
+            # Initialize trading logic
+            trading_logic = TradingLogic(api_client, data_handler, nn, env_vars)
+            logger.info("Trading logic initialized")
+            
+            # Start CLI interface
+            cli = CLI(api_client, trading_logic, data_handler, nn)
+            logger.info("Starting CLI interface...")
+            await cli.main_menu()
+            
+        except Exception as e:
+            logger.error(f"Error during component initialization: {str(e)}", exc_info=True)
+            raise
+        
+    except ValueError as ve:
+        logger.error(f"Configuration error: {str(ve)}")
+        print(f"Configuration error: {str(ve)}")
     except Exception as e:
-        logger.exception(f"Main: Unhandled exception in main:")
-        print(f"Error crítico: {e}")  # Imprime en consola también
-
+        logger.critical(f"Unexpected error: {str(e)}", exc_info=True)
+        print(f"Critical error occurred. Check logs for details.")
     finally:
-        # xnaRl4zlCAEyhZQ: Cleanup and close connections
-        print("Cerrando conexiones...")
-        if 'api_client' in locals() and api_client:
-            await api_client.close()
-        print("¡Aplicación finalizada!")
+        logger.info("Shutting down application...")
+        if api_client:
+            try:
+                await api_client.close()
+                logger.info("API client closed successfully")
+            except Exception as e:
+                logger.error(f"Error closing API client: {str(e)}")
+        
+        logger.info("Application shutdown complete")
+        print("Application has been terminated.")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\nApplication interrupted by user")
+    except Exception as e:
+        print(f"Fatal error: {str(e)}")
